@@ -28,7 +28,7 @@ namespace Checkers {
             }
             if (field.val is Piece && field.val.color != this.color) {
                 if (Math.Abs(this.field.x - field.x) == 1 && this.field.y - field.y == 1 * direction) {
-                    var dest = board.fields[idx, idy];
+                    var dest = board[idx, idy];
                     if (dest.val == null) {
                         return new Move(this, dest) { attackedPiece = field.val };
                     }
@@ -39,8 +39,6 @@ namespace Checkers {
         public void Promote() {
             var king = new King(this);
             this.field.val = king;
-            this.player.pieces.Remove(this);
-            this.player.pieces.Add(king);
         }
     }
 }

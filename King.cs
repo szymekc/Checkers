@@ -18,7 +18,7 @@ namespace Checkers {
             }
             if (field.val is Piece && field.val.color != this.color) {
                 if (Math.Abs(this.field.x - field.x) == 1 && Math.Abs(this.field.y - field.y) == 1) {
-                    var dest = board.fields[idx, idy];
+                    var dest = board[idx, idy];
                     if (dest.val == null) {
                         return new Move(this, dest) { attackedPiece = field.val };
                     }

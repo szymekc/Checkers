@@ -1,74 +1,67 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace Checkers {
     public class Player {
-        public List<Piece> pieces;
         public Color color;
         public Board board;
-        public bool canAttack;
         public Piece activePiece;
+        public bool canAttack;
 
+
+        public Player(Player player) {
+            this.color = player.color;
+            this.board = player.board;
+            this.activePiece = player.activePiece;
+            this.canAttack = player.canAttack;
+        }
         public Player(Color color, Board board) {
             this.color = color;
             this.board = board;
-            pieces = new List<Piece>();
             if (color == Color.White) {
                 for (int x = 0; x < board.boardSize; x += 2) {
                     for (int y = 0; y < 3; y++) {
-                        Pawn pawn = new Pawn(this.board, this, this.color) { field = board.fields[x + (y % 2), y] };
+                        Pawn pawn = new Pawn(this.board, this, this.color) { field = board[x + (y % 2), y] };
                         board.fields[x + (y % 2), y].val = pawn;
-                        pieces.Add(pawn);
                     }
                 }
             } else {
                 for (int x = 0; x < board.boardSize; x += 2) {
                     for (int y = 7; y > 4; y--) {
-                        Pawn pawn = new Pawn(this.board, this, this.color) { field = board.fields[x + (y % 2), y] };
+                        Pawn pawn = new Pawn(this.board, this, this.color) { field = board[x + (y % 2), y] };
                         board.fields[x + (y % 2), y].val = pawn;
-                        pieces.Add(pawn);
                     }
                 }
             }
             board.players.Add(this);
             board.playersTurn = board.players[0];
-            UpdateAvailableMoves();
         }
-        public void UpdateAvailableMoves() {
+        public List<Piece> GetPieces() {
+            var list = new List<Piece>();
+            foreach (Field field in board.fields) {
+                if (field.val != null && field.val.color == this.color) {
+                    list.Add(field.val);
+                }
+            }
+            return list;
+        }
+        public HashSet<Move> GetAvailableMoves() {
             canAttack = false;
+            var pieces = GetPieces();
+            var allMoves = new HashSet<Move>();
             if (activePiece != null) {
-                foreach (var piece in pieces) {
-                    piece.availableMoves = new HashSet<Move>();
-                }
-                foreach (var move in activePiece.GetAvailableMoves()) {
-                    if (move.attackedPiece != null) {
-                        canAttack = true;
-                    }
-                }
-                return;
+                return activePiece.GetAvailableAttacks();
             }
             foreach (var piece in pieces) {
-                foreach (var move in piece.GetAvailableMoves()) {
-                    if (move.attackedPiece != null) {
-                        canAttack = true;
-                    }
-                }
+                allMoves.UnionWith(piece.GetMovesOrAttacks());
             }
-            if (canAttack) {
-                foreach (var piece in pieces) {
-                    piece.availableMoves.RemoveWhere((a) => a.attackedPiece == null);
-                }
+            if (this.canAttack) {
+                allMoves.RemoveWhere((a) => a.attackedPiece == null);
             }
+            return allMoves;
         }
         public bool IsDefeated() {
-            if (pieces.Count == 0) {
-                return true;
-            }
-            foreach (var piece in pieces) {
-                if (piece.availableMoves.Count > 0) {
-                    return false;
-                }
-            }
-            return true;
+            return GetAvailableMoves().Count == 0;
         }
     }
 }

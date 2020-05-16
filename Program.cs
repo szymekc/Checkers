@@ -9,8 +9,9 @@ namespace Checkers {
         [STAThread]
         static void Main() {
             Board board = new Board();
-            Player player = new Player(Color.Black, board);
-            Player opponent = new Player(Color.White, board);
+            var player = new Human(Color.Black, board);
+            var opponent = new Computer(Color.White, board);
+            board.playersTurn = board.players[0];
 
             Application.SetHighDpiMode(HighDpiMode.SystemAware);
             Application.EnableVisualStyles();

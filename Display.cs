@@ -1,5 +1,6 @@
 ﻿using Checkers.Properties;
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
@@ -23,9 +24,6 @@ namespace Checkers {
             await UpdateBoard();
         }
 
-        //private void tableLayoutPanel1_Paint(object sender, PaintEventArgs e) {
-        //    UpdateBoard();
-        //}
         private async void UpdateTurnLabel() {
             if (board.playersTurn.color == Color.Black) {
                 turn.Text = "Black's turn";
@@ -44,11 +42,11 @@ namespace Checkers {
                     var pic = (PictureBox)c.Controls.Find("pic", true)[0];
                     if (board.fields[pos.Column, pos.Row].val == null) {
                         pic.Image = null;
-                    } else if (board.fields[pos.Column, pos.Row].val.color == Color.Black && board.fields[pos.Column, pos.Row].val is Pawn) {
+                    } else if (board[pos.Column, pos.Row].val.color == Color.Black && board[pos.Column, pos.Row].val is Pawn) {
                         pic.Image = Resources.black;
-                    } else if (board.fields[pos.Column, pos.Row].val.color == Color.White && board.fields[pos.Column, pos.Row].val is Pawn) {
+                    } else if (board[pos.Column, pos.Row].val.color == Color.White && board[pos.Column, pos.Row].val is Pawn) {
                         pic.Image = Resources.red;
-                    } else if (board.fields[pos.Column, pos.Row].val.color == Color.Black && board.fields[pos.Column, pos.Row].val is King) {
+                    } else if (board[pos.Column, pos.Row].val.color == Color.Black && board[pos.Column, pos.Row].val is King) {
                         pic.Image = Resources.blackking;
                     } else {
                         pic.Image = Resources.redking;
@@ -64,12 +62,13 @@ namespace Checkers {
                 p = (Panel)sender;
             }
             if (selected != null &&
-                board.fields[BoardLayout.GetPositionFromControl(selected).Column, BoardLayout.GetPositionFromControl(selected).Row].val != null &&
-                board.fields[BoardLayout.GetPositionFromControl(selected).Column, BoardLayout.GetPositionFromControl(selected).Row].val.player == board.playersTurn) {
+                board[BoardLayout.GetPositionFromControl(selected).Column, BoardLayout.GetPositionFromControl(selected).Row].val != null &&
+                board[BoardLayout.GetPositionFromControl(selected).Column, BoardLayout.GetPositionFromControl(selected).Row].val.player == board.playersTurn &&
+                board[BoardLayout.GetPositionFromControl(selected).Column, BoardLayout.GetPositionFromControl(selected).Row].val.player is Human) {
                 var pos = BoardLayout.GetPositionFromControl(selected);
                 var fieldPos = BoardLayout.GetPositionFromControl(p);
-                Move move = board.fields[pos.Column, pos.Row].val.availableMoves.FirstOrDefault(
-                    (a) => a.moveTo.x == fieldPos.Column && a.moveTo.y == fieldPos.Row);
+                Move move = board.playersTurn.GetAvailableMoves().FirstOrDefault(
+                    (a) => a.piece.field == board[pos.Column,pos.Row] && a.moveTo.x == fieldPos.Column && a.moveTo.y == fieldPos.Row);
                 board.MakeMove(move);
             }
             await DeselectAll();
@@ -106,9 +105,9 @@ namespace Checkers {
                 return;
             }
             var pos = BoardLayout.GetPositionFromControl(selected);
-            if (board.fields[pos.Column, pos.Row].val != null) {
-                var list = board.fields[pos.Column, pos.Row].val.GetAvailableMoves();
-                foreach (var move in list) {
+            if (board[pos.Column, pos.Row].val != null) {
+                HashSet<Move> list = board[pos.Column, pos.Row].val.GetMovesOrAttacks();
+                foreach (Move move in list) {
                     var x = move.moveTo.x;
                     var y = move.moveTo.y;
                     var c = BoardLayout.GetControlFromPosition(x, y);
