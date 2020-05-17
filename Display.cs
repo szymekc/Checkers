@@ -68,7 +68,7 @@ namespace Checkers {
                 var pos = BoardLayout.GetPositionFromControl(selected);
                 var fieldPos = BoardLayout.GetPositionFromControl(p);
                 Move move = board.playersTurn.GetAvailableMoves().FirstOrDefault(
-                    (a) => a.piece.field == board[pos.Column,pos.Row] && a.moveTo.x == fieldPos.Column && a.moveTo.y == fieldPos.Row);
+                    (a) => a.piece.field == board[pos.Column, pos.Row] && a.moveTo.x == fieldPos.Column && a.moveTo.y == fieldPos.Row);
                 board.MakeMove(move);
             }
             await DeselectAll();
@@ -106,7 +106,7 @@ namespace Checkers {
             }
             var pos = BoardLayout.GetPositionFromControl(selected);
             if (board[pos.Column, pos.Row].val != null) {
-                HashSet<Move> list = board[pos.Column, pos.Row].val.GetMovesOrAttacks();
+                HashSet<Move> list = board[pos.Column, pos.Row].val.GetMovesOrAttacks(board);
                 foreach (Move move in list) {
                     var x = move.moveTo.x;
                     var y = move.moveTo.y;

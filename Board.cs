@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace Checkers {
     public class Board {
@@ -20,12 +19,38 @@ namespace Checkers {
                 }
             }
         }
+        public Board(Board board) {
+            this.isBase = false;
+            this.fields = new Field[boardSize, boardSize];
+            for (int i = 0; i < 8; i++) {
+                for (int j = 0; j < 8; j++) {
+                    this.fields[i, j] = new Field(this, i, j);
+                    if (board.fields[i, j].val == null) {
+                        this.fields[i, j].val = null;
+                    } else {
+                        this.fields[i, j].val = new Pawn(board.fields[i, j].val.player, this.fields[i, j], board.fields[i, j].val);
+                    }
+                }
+            }
+            this.players = new List<Player>(board.players);
+            this.playersTurn = new Player(board.playersTurn, this);
+            this.turnNum = board.turnNum;
+        }
         public Board(Board board, Move move) {
             this.isBase = false;
-            this.fields = new Field[boardSize,boardSize];
-            this.fields = (Field[,])board.fields.Clone();
+            this.fields = new Field[boardSize, boardSize];
+            for (int i = 0; i < 8; i++) {
+                for (int j = 0; j < 8; j++) {
+                    this.fields[i, j] = new Field(this, i, j);
+                    if (board.fields[i, j].val == null) {
+                        this.fields[i, j].val = null;
+                    } else {
+                        this.fields[i, j].val = new Pawn(board.fields[i, j].val.player, this.fields[i, j], board.fields[i, j].val);
+                    }
+                }
+            }
             this.players = new List<Player>(board.players);
-            this.playersTurn = new Player(board.playersTurn);
+            this.playersTurn = new Player(board.playersTurn, this);
             this.turnNum = board.turnNum;
             this.MakeMove(move);
         }
@@ -67,7 +92,7 @@ namespace Checkers {
                 return;
             }
             foreach (var f in fields) {
-                if (move.piece.CheckAttack(f) != null) {
+                if (move.piece.CheckAttack(this, f) != null) {
                     return;
                 }
             }

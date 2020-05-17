@@ -3,7 +3,14 @@
 namespace Checkers {
     public class Pawn : Piece {
         public int direction;
-        public Pawn(Board board, Player player, Color color) : base(board, player, color) {
+        public Pawn(Player player, Color color) : base(player, color) {
+            if (this.color == Color.White) {
+                direction = -1;
+            } else {
+                direction = 1;
+            }
+        }
+        public Pawn(Player player, Field field, Piece piece) : base(field, player, piece) {
             if (this.color == Color.White) {
                 direction = -1;
             } else {
@@ -11,7 +18,7 @@ namespace Checkers {
             }
         }
 
-        override public Move CheckMove(Field field) {
+        override public Move CheckMove(Board board, Field field) {
             if (field.val is Piece) {
                 return null;
             }
@@ -20,7 +27,7 @@ namespace Checkers {
             }
             return null;
         }
-        public override Move CheckAttack(Field field) {
+        public override Move CheckAttack(Board board, Field field) {
             var idx = this.field.x - (2 * (this.field.x - field.x));
             var idy = this.field.y - 2 * direction;
             if (idx < 0 || idx > 7 || idy < 0 || idy > 7) {

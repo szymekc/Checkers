@@ -2,7 +2,7 @@
 using System.Diagnostics.CodeAnalysis;
 
 namespace Checkers {
-    public class Move : IEquatable<Move>{
+    public class Move : IEquatable<Move> {
         public Piece piece;
         public Field moveTo;
         public Piece attackedPiece;

@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Checkers {
-    class Computer : Player {
+    public class Computer : Player {
         public Computer(Color color, Board board) : base(color, board) {
         }
         public int EvaluateBoard(Board board) {
@@ -30,6 +28,9 @@ namespace Checkers {
         }
         public (int, Move) Minimax(Board board, int depth, int maxDepth) {
             int chosenScore = 0;
+            Move bestMove = null;
+            int bestScore;
+            Console.WriteLine(depth);
             Move chosenMove = null;
             if (depth == maxDepth) {
                 chosenScore = EvaluateBoard(board);
@@ -41,11 +42,9 @@ namespace Checkers {
                     return (chosenScore, chosenMove);
                 } else {
                     if (board.playersTurn == this) {
-                        int bestScore = Int32.MinValue;
+                        bestScore = Int32.MinValue;
                         foreach (var move in moves) {
-                            Move bestMove;
                             Board newBoard = new Board(board, move);
-                            System.Console.WriteLine(depth);
                             (int the_score, Move the_move) = Minimax(newBoard, depth + 1, maxDepth);
                             if (the_score > bestScore) {
                                 bestScore = the_score;
@@ -53,9 +52,8 @@ namespace Checkers {
                             }
                         }
                     } else {
-                        int bestScore = Int32.MaxValue;
+                        bestScore = Int32.MaxValue;
                         foreach (var move in moves) {
-                            Move bestMove;
                             Board newBoard = new Board(board, move);
                             (int the_score, Move the_move) = Minimax(newBoard, depth + 1, maxDepth);
                             if (the_score < bestScore) {
@@ -64,7 +62,7 @@ namespace Checkers {
                             }
                         }
                     }
-                    return (chosenScore, chosenMove);
+                    return (chosenScore = bestScore, chosenMove = bestMove);
                 }
             }
         }

@@ -2,7 +2,7 @@
 using System.Diagnostics.CodeAnalysis;
 
 namespace Checkers {
-    public class Field : IEquatable<Field>{
+    public class Field : IEquatable<Field> {
         public Board board;
         public Piece val;
         public int x;
@@ -15,7 +15,7 @@ namespace Checkers {
         }
 
         public bool Equals([AllowNull] Field other) {
-            return this.x == other.x && this.y == other.y;
+            return this.x == other.x && this.y == other.y && this.val == other.val;
         }
     }
 }

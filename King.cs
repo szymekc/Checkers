@@ -2,15 +2,14 @@
 
 namespace Checkers {
     public class King : Piece {
-        public King(Board board, Player player, Color color) : base(board, player, color) {
+        public King(Player player, Color color) : base(player, color) {
         }
-        public King(Pawn pawn) : base(pawn.board, pawn.player, pawn.color) {
+        public King(Pawn pawn) : base(pawn.player, pawn.color) {
             this.color = pawn.color;
             this.field = pawn.field;
-            this.board = pawn.board;
             this.player = pawn.player;
         }
-        public override Move CheckAttack(Field field) {
+        public override Move CheckAttack(Board board, Field field) {
             var idx = this.field.x - (2 * (this.field.x - field.x));
             var idy = this.field.y - (2 * (this.field.y - field.y));
             if (idx < 0 || idx > 7 || idy < 0 || idy > 7) {
@@ -27,7 +26,7 @@ namespace Checkers {
             return null;
         }
 
-        override public Move CheckMove(Field field) {
+        override public Move CheckMove(Board board, Field field) {
             if (field.val != null) {
                 return null;
             }
