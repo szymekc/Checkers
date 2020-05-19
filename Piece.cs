@@ -1,21 +1,22 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Checkers {
     public abstract class Piece {
         public Color color;
-        public Field field;
         public Player player;
-
-        protected Piece(Player player, Color color) {
-            this.color = color;
+        public int x;
+        public int y;
+        public Piece(Player player, int x, int y) {
+            this.color = player.color;
             this.player = player;
+            this.x = x;
+            this.y = y;
         }
-        public Piece(Field field, Player player, Piece piece) {
-            this.color = piece.color;
-            this.field = field;
-            this.player = player;
+        public Field GetField(Board board) {
+            return board.fields[x, y];
         }
-
         public HashSet<Move> GetAvailableMoves(Board board) {
             var availableMoves = new HashSet<Move>();
             foreach (Field f in board.fields) {
@@ -45,5 +46,6 @@ namespace Checkers {
         }
         public abstract Move CheckMove(Board board, Field field);
         public abstract Move CheckAttack(Board board, Field field);
+
     }
 }

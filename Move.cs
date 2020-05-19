@@ -8,6 +8,9 @@ namespace Checkers {
         public Piece attackedPiece;
         public bool isPromotion;
 
+        public Move() {
+
+        }
         public Move(Piece piece, Field moveTo) {
             this.piece = piece;
             this.moveTo = moveTo;

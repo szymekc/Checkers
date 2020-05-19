@@ -1,6 +1,7 @@
 ﻿using Checkers.Properties;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
@@ -10,6 +11,8 @@ namespace Checkers {
     public partial class Display : Form {
         public Panel selected;
         public Board board;
+        public Stopwatch stopwatch = new Stopwatch();
+        public TimeSpan ts;
         public Display(Board board) {
             this.board = board;
             InitializeComponent();
@@ -26,7 +29,12 @@ namespace Checkers {
 
         private async void UpdateTurnLabel() {
             if (board.playersTurn.color == Color.Black) {
-                turn.Text = "Black's turn";
+                if (stopwatch != null) {
+                    ts = stopwatch.Elapsed;
+                    turn.Text = "Black's turn, time: " + ts.TotalSeconds + " s";
+                } else {
+                    turn.Text = "Black's turn";
+                }
             } else {
                 turn.Text = "Red's turn";
             }
@@ -68,14 +76,22 @@ namespace Checkers {
                 var pos = BoardLayout.GetPositionFromControl(selected);
                 var fieldPos = BoardLayout.GetPositionFromControl(p);
                 Move move = board.playersTurn.GetAvailableMoves().FirstOrDefault(
-                    (a) => a.piece.field == board[pos.Column, pos.Row] && a.moveTo.x == fieldPos.Column && a.moveTo.y == fieldPos.Row);
+                    (a) => a.piece.GetField(board) == board[pos.Column, pos.Row] && a.moveTo.x == fieldPos.Column && a.moveTo.y == fieldPos.Row);
                 board.MakeMove(move);
-            }
-            await DeselectAll();
-            selected = p;
-            selected.BackColor = SystemColors.Highlight;
-            await UpdateBoard();
-            await HighlightMoves();
+                turn.Text = "Thinking...";
+                if (!board.playersTurn.IsDefeated() && board.playersTurn is Computer) {
+                    stopwatch.Restart();
+                    board.MakeTurn(((Computer)board.playersTurn).GetBestTurn());
+                    stopwatch.Stop();
+                }
+            } 
+                await DeselectAll();
+                selected = p;
+                selected.BackColor = SystemColors.Highlight;
+                await UpdateBoard();
+                await HighlightMoves();
+            
+
         }
         private async Task Deselect() {
             if (selected == null) {
@@ -89,6 +105,7 @@ namespace Checkers {
             }
         }
         private async Task DeselectAll() {
+            selected = null;
             foreach (Control c in BoardLayout.Controls) {
                 var pos = BoardLayout.GetPositionFromControl(c);
                 if (c is Panel) {
